@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VancoPK Calculator</title>
+<style>
+  :root{
+    --ink:#1c2b2a;
+    --paper:#f6f5f1;
+    --panel:#ffffff;
+    --line:#d9d6cc;
+    --teal:#1f5f5b;
+    --teal-dark:#153f3c;
+    --amber:#a8701a;
+    --amber-bg:#fbeed9;
+    --red:#a3372b;
+    --red-bg:#fbe4e0;
+    --green:#2c6e49;
+    --green-bg:#e3f0e6;
+    --mono: "SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", -apple-system, Segoe UI, Roboto, sans-serif;
+    line-height:1.45;
+  }
+  header{
+    background:var(--teal-dark);
+    color:#f2efe6;
+    padding:28px 20px 22px;
+  }
+  header .wrap{max-width:920px;margin:0 auto;}
+  header h1{
+    margin:0 0 6px;
+    font-size:1.55rem;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+  header p.sub{margin:0;font-size:.85rem;color:#c9d9d6;}
+  .disclaimer{
+    max-width:920px;margin:16px auto 0;
+    background:#f9edd6;
+    border:1px solid #e2c98a;
+    color:#5c4a12;
+    padding:12px 16px;
+    border-radius:6px;
+    font-size:.82rem;
+  }
+  main{max-width:920px;margin:0 auto;padding:22px 20px 80px;}
+  .phase{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  .phase-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding:16px 20px;
+    background:var(--teal);
+    color:#fff;
+    cursor:pointer;
+    user-select:none;
+  }
+  .phase-head .num{
+    font-family:var(--mono);
+    font-size:.78rem;
+    background:rgba(255,255,255,.18);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .phase-head h2{margin:0;font-size:1.02rem;font-weight:600;}
+  .phase-head .toggle{margin-left:auto;font-size:.85rem;opacity:.85;}
+  .phase-body{padding:18px 20px 22px;}
+  .phase-body.collapsed{display:none;}
+  .note{font-size:.78rem;color:#6b6a63;margin:6px 0 14px;}
+  fieldset{
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin:0 0 16px;
+    padding:14px 16px 16px;
+  }
+  legend{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:#7a7a72;
+    padding:0 6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:12px 16px;
+  }
+  label{
+    display:block;
+    font-size:.78rem;
+    color:#4a4a44;
+    margin-bottom:4px;
+  }
+  input[type=number], select, input[type=text]{
+    width:100%;
+    padding:8px 9px;
+    font-size:.92rem;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    color:var(--ink);
+    font-family:var(--mono);
+  }
+  input:focus, select:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .field{margin-bottom:4px;}
+  .out{
+    background:#f0efe9;
+    border:1px dashed #c7c4b7;
+    border-radius:6px;
+    padding:8px 9px;
+    font-family:var(--mono);
+    font-size:.92rem;
+    min-height:1.3em;
+  }
+  .out .unit{color:#8a897f;font-size:.78rem;margin-left:4px;}
+  .results{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:12px 16px;
+    margin-top:6px;
+  }
+  .badge{
+    display:inline-block;
+    font-size:.72rem;
+    font-weight:600;
+    padding:2px 9px;
+    border-radius:20px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .badge.green{background:var(--green-bg);color:var(--green);}
+  .badge.amber{background:var(--amber-bg);color:var(--amber);}
+  .badge.red{background:var(--red-bg);color:var(--red);}
+  .badge.neutral{background:#eceae2;color:#7a7a72;}
+  .rowline{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:6px 0;border-bottom:1px solid #eeece4;font-size:.88rem;
+  }
+  .rowline:last-child{border-bottom:none;}
+  .rowline .val{font-family:var(--mono);font-weight:600;}
+  .practical{
+    margin-top:12px;
+    background:#eef3f1;
+    border:1px solid #cfe0da;
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .practical .big{font-size:1.15rem;font-weight:700;color:var(--teal-dark);}
+  .two-col-btn{
+    display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;
+  }
+  .two-col-btn button{
+    flex:1;min-width:160px;
+    padding:9px 10px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:#fff;
+    font-size:.82rem;
+    cursor:pointer;
+  }
+  .two-col-btn button.active{
+    background:var(--teal);color:#fff;border-color:var(--teal);
+  }
+  .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  footer{
+    text-align:center;
+    color:#8a897f;
+    font-size:.78rem;
+    padding:0 20px 40px;
+  }
+  .warn-line{font-size:.78rem;color:var(--red);margin-top:6px;}
+  @media (max-width:520px){
+    .grid, .results{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>VancoPK Calculator</h1>
+    <p class="sub">Initial dosing → steady-state trough → AUC-guided adjustment, per the VancoPK.com trough-only framework.</p>
+  </div>
+</header>
+
+<div class="disclaimer">
+  <strong>Clinical decision support only.</strong> All doses must be reviewed and verified by a licensed pharmacist before use. This tool does not replace clinical judgment. Nothing entered here is saved or transmitted — all calculation happens in your browser.
+</div>
+
+<main>
+
+  <!-- ============ SETTINGS ============ -->
+  <div class="phase" id="phase-settings">
+    <div class="phase-head" onclick="toggleBody('settings')">
+      <span class="num">SETTINGS</span>
+      <h2>Practical Rounding &amp; Guideline Bounds (editable)</h2>
+      <span class="toggle" id="settings-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body" id="settings-body">
+      <div class="grid">
+        <div class="field">
+          <label for="s-round">Practical rounding increment (mg)</label>
+          <input type="number" id="s-round" value="250" step="1">
+        </div>
+        <div class="field">
+          <label for="s-maxload">Max loading dose (mg)</label>
+          <input type="number" id="s-maxload" value="3000" step="1">
+        </div>
+        <div class="field">
+          <label for="s-ldlow">Loading dose guideline low (mg/kg)</label>
+          <input type="number" id="s-ldlow" value="20" step="1">
+        </div>
+        <div class="field">
+          <label for="s-ldhigh">Loading dose guideline high (mg/kg)</label>
+          <input type="number" id="s-ldhigh" value="35" step="1">
+        </div>
+        <div class="field">
+          <label for="s-aucLow">AUC24 target range — low</label>
+          <input type="number" id="s-aucLow" value="400" step="1">
+        </div>
+        <div class="field">
+          <label for="s-aucHigh">AUC24 target range — high</label>
+          <input type="number" id="s-aucHigh" value="600" step="1">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 1 ============ -->
+  <div class="phase" id="phase-1">
+    <div class="phase-head" onclick="toggleBody('p1')">
+      <span class="num">PHASE 1</span>
+      <h2>Initial Dosing (before any drug level exists)</h2>
+      <span class="toggle" id="p1-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body" id="p1-body">
+
+      <fieldset>
+        <legend>Patient Information</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p1-age">Age (years)</label>
+            <input type="number" id="p1-age" value="60">
+          </div>
+          <div class="field">
+            <label for="p1-sex">Sex</label>
+            <select id="p1-sex">
+              <option value="">—</option>
+              <option value="male" selected>Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="p1-wt">Actual body weight — TBW (kg)</label>
+            <input type="number" id="p1-wt" value="80" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1-ht">Height (cm)</label>
+            <input type="number" id="p1-ht" value="178" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1-scr">Serum creatinine — SCr (mg/dL)</label>
+            <input type="number" id="p1-scr" value="0.9" step="0.01">
+          </div>
+          <div class="field">
+            <label for="p1-crcl-known">Measured/known CrCl — optional override (mL/min)</label>
+            <input type="number" id="p1-crcl-known" placeholder="leave blank to calculate">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Weights &amp; Renal Function (calculated)</legend>
+        <div class="results">
+          <div><label>BMI</label><div class="out" id="o-bmi">—</div></div>
+          <div><label>IBW (kg)</label><div class="out" id="o-ibw">—</div></div>
+          <div><label>AdjBW (kg)</label><div class="out" id="o-adjbw">—</div></div>
+          <div><label>Weight used for CrCl</label><div class="out" id="o-crclwt">—</div></div>
+          <div><label>CrCl — Cockcroft-Gault (mL/min)</label><div class="out" id="o-crcl">—</div></div>
+        </div>
+        <p class="note">Adjusted body weight is substituted for actual body weight in Cockcroft-Gault whenever BMI &gt; 25, per the framework. Provide a measured CrCl above to bypass this estimate.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Population PK Estimates</legend>
+        <div class="results">
+          <div><label>Population CLv = [0.75(CrCl)+4]×0.06 (L/hr)</label><div class="out" id="o-clv-pop">—</div></div>
+          <div><label>Population Vd = 0.29(age)+0.33(TBW)+11 (L)</label><div class="out" id="o-vd-pop">—</div></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Loading Dose (optional)</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p1-peak">Desired peak (mcg/mL)</label>
+            <input type="number" id="p1-peak" value="25" step="0.5">
+          </div>
+        </div>
+        <div class="results">
+          <div><label>Vd(loading) = Vd × 1.25 (L)</label><div class="out" id="o-vdload">—</div></div>
+          <div><label>Loading dose = peak × Vd(loading) (mg)</label><div class="out" id="o-ld-raw">—</div></div>
+        </div>
+        <div class="practical">
+          <div>Practical loading dose <span id="ld-badge" class="badge neutral">—</span></div>
+          <div class="big" id="o-ld-practical">—</div>
+          <div class="warn-line" id="ld-warn"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Maintenance Dose (target daily AUC)</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p1-auc">Desired AUC24 (mg·h/L)</label>
+            <input type="number" id="p1-auc" value="500" step="10">
+          </div>
+          <div class="field">
+            <label for="p1-interval">Dosing interval (hours)</label>
+            <input type="number" id="p1-interval" value="12" step="1">
+          </div>
+        </div>
+        <div class="results">
+          <div><label>Daily dose = CLv × Desired AUC (mg/day)</label><div class="out" id="o-daily-raw">—</div></div>
+        </div>
+        <div class="practical">
+          <div>Practical maintenance regimen</div>
+          <div class="big" id="o-maint-practical">—</div>
+        </div>
+      </fieldset>
+
+    </div>
+  </div>
+
+  <!-- ============ PHASE 1B ============ -->
+  <div class="phase" id="phase-1b">
+    <div class="phase-head" onclick="toggleBody('p1b')">
+      <span class="num">PHASE 1B — OPTIONAL</span>
+      <h2>Two Levels After First Dose (alternative to Cockcroft-Gault)</h2>
+      <span class="toggle" id="p1b-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body collapsed" id="p1b-body">
+      <p class="note">Use instead of Phase 1 Steps 1–3 when Cockcroft-Gault is unreliable (e.g. bed-bound patients with low muscle mass / artificially low SCr). Draw two levels ≥4 hr apart after the first dose, with no doses given between draws.</p>
+      <fieldset>
+        <legend>Levels &amp; Timing</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p1b-dose">First dose given (mg)</label>
+            <input type="number" id="p1b-dose" placeholder="e.g. 1750">
+          </div>
+          <div class="field">
+            <label for="p1b-ti">Infusion duration ti (hr)</label>
+            <input type="number" id="p1b-ti" value="1" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1b-chigh">C-high (mcg/mL)</label>
+            <input type="number" id="p1b-chigh" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1b-clow">C-low (mcg/mL)</label>
+            <input type="number" id="p1b-clow" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1b-dt">Δt — time between C-high and C-low draws (hr)</label>
+            <input type="number" id="p1b-dt" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p1b-t">t — time from end of infusion to C-high draw (hr)</label>
+            <input type="number" id="p1b-t" step="0.1">
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Patient-Specific PK (replaces population CLv/Vd)</legend>
+        <div class="results">
+          <div><label>Ke = ln(Chigh/Clow) / Δt (hr⁻¹)</label><div class="out" id="o-1b-ke">—</div></div>
+          <div><label>Cmax = Chigh × e^(Ke·t) (mcg/mL)</label><div class="out" id="o-1b-cmax">—</div></div>
+          <div><label>Vd (patient-specific) (L)</label><div class="out" id="o-1b-vd">—</div></div>
+          <div><label>CLv (patient-specific) (L/hr)</label><div class="out" id="o-1b-clv">—</div></div>
+          <div><label>Half-life t½ = ln2/Ke (hr)</label><div class="out" id="o-1b-thalf">—</div></div>
+        </div>
+        <p class="note">When filled in, these patient-specific Vd/CLv values are used in Phase 3 &amp; 4 instead of the population estimates.</p>
+      </fieldset>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 2 (informational) ============ -->
+  <div class="phase" id="phase-2">
+    <div class="phase-head" onclick="toggleBody('p2')">
+      <span class="num">PHASE 2</span>
+      <h2>Reaching Steady State</h2>
+      <span class="toggle" id="p2-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body collapsed" id="p2-body">
+      <div class="results">
+        <div><label>Half-life t½ = ln2/Ke (hr)</label><div class="out" id="o-2-thalf">—</div></div>
+        <div><label>Estimated time to steady state (4–5 half-lives, hr)</label><div class="out" id="o-2-tss">—</div></div>
+      </div>
+      <p class="note">Conventionally, continue the maintenance regimen until just before the 4th dose. Valid steady-state level requires: prior doses given within ~1 hr of scheduled time, stable renal function, and the level drawn no sooner than just before the 4th dose.</p>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 3 ============ -->
+  <div class="phase" id="phase-3">
+    <div class="phase-head" onclick="toggleBody('p3')">
+      <span class="num">PHASE 3</span>
+      <h2>First Steady-State Trough → AUC Estimation</h2>
+      <span class="toggle" id="p3-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body collapsed" id="p3-body">
+      <fieldset>
+        <legend>Current Regimen &amp; Measured Level</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p3-dose">Current dose (mg)</label>
+            <input type="number" id="p3-dose" placeholder="carried from Phase 1">
+          </div>
+          <div class="field">
+            <label for="p3-T">Dosing interval T (hr)</label>
+            <input type="number" id="p3-T" value="12" step="1">
+          </div>
+          <div class="field">
+            <label for="p3-ti">Infusion duration ti (hr)</label>
+            <input type="number" id="p3-ti" value="1" step="0.1">
+          </div>
+          <div class="field">
+            <label for="p3-css">Measured steady-state level, Css (mcg/mL)</label>
+            <input type="number" id="p3-css" step="0.1" placeholder="e.g. 12.4">
+          </div>
+        </div>
+        <p class="note">Level can be drawn any time ≥60 min after infusion end (doesn't need to be a true trough), just before the 4th dose.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Solved PK &amp; AUC24</legend>
+        <div class="results">
+          <div><label>Vd used (L)</label><div class="out" id="o-3-vd">—</div></div>
+          <div><label>Ke — solved iteratively (hr⁻¹)</label><div class="out" id="o-3-ke">—</div></div>
+          <div><label>CLv patient-specific (L/hr)</label><div class="out" id="o-3-clv">—</div></div>
+          <div><label>Total daily dose (mg/day)</label><div class="out" id="o-3-tdd">—</div></div>
+          <div><label>AUC24 (mg·h/L)</label><div class="out" id="o-3-auc">—</div><span id="o-3-auc-badge" class="badge neutral">—</span></div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 4 ============ -->
+  <div class="phase" id="phase-4">
+    <div class="phase-head" onclick="toggleBody('p4')">
+      <span class="num">PHASE 4</span>
+      <h2>Dose Adjustment (if AUC is off-target)</h2>
+      <span class="toggle" id="p4-toggle">▾ collapse</span>
+    </div>
+    <div class="phase-body collapsed" id="p4-body">
+      <fieldset>
+        <legend>Target</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="p4-auc">Desired AUC24 (mg·h/L)</label>
+            <input type="number" id="p4-auc" value="500" step="10">
+          </div>
+        </div>
+        <div class="results">
+          <div><label>New daily dose = CLv(patient) × Desired AUC (mg/day)</label><div class="out" id="o-4-daily">—</div></div>
+        </div>
+        <div class="practical">
+          <div>Recommended new regimen</div>
+          <div class="big" id="o-4-practical">—</div>
+        </div>
+        <p class="note">Sanity check: if you also have an actual peak-trough AUC on this patient, compare it to this trough-only estimate — a difference &gt;100 points suggests a level-timing/documentation issue rather than a true PK mismatch.</p>
+      </fieldset>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Based on the VancoPK.com trough-only framework (Nathan Fewel, PharmD, BCPS). Clinical decision support aid — verify all recommendations before use. Nothing entered here is saved or transmitted.
+</footer>
+
+<script>
+function toggleBody(id){
+  const body = document.getElementById(id+'-body');
+  const toggle = document.getElementById(id+'-toggle');
+  body.classList.toggle('collapsed');
+  toggle.textContent = body.classList.contains('collapsed') ? '▸ expand' : '▾ collapse';
+}
+
+function num(id){
+  const el = document.getElementById(id);
+  const v = parseFloat(el.value);
+  return isNaN(v) ? null : v;
+}
+function setOut(id, text){ document.getElementById(id).innerHTML = text; }
+function fmt(n, d=2){ return (n===null || n===undefined || isNaN(n)) ? '—' : n.toFixed(d); }
+
+function roundToIncrement(value, increment){
+  if(increment<=0) return value;
+  return Math.round(value/increment)*increment;
+}
+
+function badgeForAUC(auc, low, high){
+  if(auc===null) return {cls:'neutral', txt:'—'};
+  if(auc>=low && auc<=high) return {cls:'green', txt:'in range'};
+  if(auc < low*0.85 || auc > high*1.15) return {cls:'red', txt:'out of range'};
+  return {cls:'amber', txt:'borderline'};
+}
+
+// ---------- Solve Ke iteratively via bracket + bisection ----------
+function solveKeFromCss(dose, T, ti, Vd, Css){
+  // Css(Ke) = Dose * e^(-Ke*(T-ti)) * (1 - e^(-Ke*ti)) / (ti * Ke * Vd * (1 - e^(-Ke*T)))
+  function predicted(Ke){
+    if(Ke<=0) return NaN;
+    const numerator = dose * Math.exp(-Ke*(T-ti)) * (1 - Math.exp(-Ke*ti));
+    const denominator = ti * Ke * Vd * (1 - Math.exp(-Ke*T));
+    return numerator/denominator;
+  }
+  function f(Ke){ return predicted(Ke) - Css; }
+
+  // scan for a sign change bracket between 0.0005 and 1.0
+  let lo=null, hi=null;
+  let prevKe = 0.0005, prevF = f(prevKe);
+  for(let k=0.001; k<=1.5; k+=0.001){
+    const curF = f(k);
+    if(isFinite(prevF) && isFinite(curF) && prevF*curF<0){
+      lo = prevKe; hi = k; break;
+    }
+    prevKe = k; prevF = curF;
+  }
+  if(lo===null) return null; // no bracket found — inputs likely invalid/inconsistent
+
+  for(let i=0;i<80;i++){
+    const mid = (lo+hi)/2;
+    const fMid = f(mid);
+    const fLo = f(lo);
+    if(fLo*fMid<=0){ hi = mid; } else { lo = mid; }
+  }
+  return (lo+hi)/2;
+}
+
+function recalcAll(){
+  const round = num('s-round') ?? 250;
+  const maxLoad = num('s-maxload') ?? 3000;
+  const ldLow = num('s-ldlow') ?? 20;
+  const ldHigh = num('s-ldhigh') ?? 35;
+  const aucLow = num('s-aucLow') ?? 400;
+  const aucHigh = num('s-aucHigh') ?? 600;
+
+  // ---------- PHASE 1 ----------
+  const age = num('p1-age');
+  const sex = document.getElementById('p1-sex').value;
+  const tbw = num('p1-wt');
+  const htCm = num('p1-ht');
+  const scr = num('p1-scr');
+  const crclOverride = num('p1-crcl-known');
+
+  let bmi=null, ibw=null, adjbw=null, crclWt=null, crcl=null;
+
+  if(tbw!==null && htCm!==null && htCm>0){
+    const htM = htCm/100;
+    bmi = tbw/(htM*htM);
+  }
+  if(htCm!==null && sex){
+    const htIn = htCm/2.54;
+    const base = sex==='male' ? 50 : 45.5;
+    ibw = base + 2.3*(htIn-60);
+    if(ibw < 0) ibw = null;
+  }
+  if(ibw!==null && tbw!==null){
+    adjbw = ibw + 0.4*(tbw-ibw);
+  }
+  if(bmi!==null && bmi>25 && adjbw!==null){
+    crclWt = adjbw;
+  } else if(tbw!==null){
+    crclWt = tbw;
+  }
+  if(crclOverride!==null){
+    crcl = crclOverride;
+  } else if(age!==null && crclWt!==null && scr!==null && scr>0 && sex){
+    crcl = ((140-age)*crclWt)/(72*scr);
+    if(sex==='female') crcl *= 0.85;
+  }
+
+  setOut('o-bmi', fmt(bmi,1));
+  setOut('o-ibw', ibw!==null ? fmt(ibw,1)+'<span class="unit">kg</span>' : '—');
+  setOut('o-adjbw', adjbw!==null ? fmt(adjbw,1)+'<span class="unit">kg</span>' : '—');
+  setOut('o-crclwt', crclWt!==null ? fmt(crclWt,1)+'<span class="unit">kg</span>'+(bmi!==null && bmi>25 ? ' (AdjBW, BMI>25)' : ' (TBW)') : '—');
+  setOut('o-crcl', crcl!==null ? fmt(crcl,1)+'<span class="unit">mL/min</span>'+(crclOverride!==null ? ' (measured, override)' : '') : '—');
+
+  // Population CLv & Vd
+  let clvPop=null, vdPop=null;
+  if(crcl!==null){
+    clvPop = (0.75*crcl + 4) * 0.06;
+  }
+  if(age!==null && tbw!==null){
+    vdPop = 0.29*age + 0.33*tbw + 11;
+  }
+  setOut('o-clv-pop', clvPop!==null ? fmt(clvPop,3)+'<span class="unit">L/hr</span>' : '—');
+  setOut('o-vd-pop', vdPop!==null ? fmt(vdPop,1)+'<span class="unit">L</span>' : '—');
+
+  // Loading dose
+  const peak = num('p1-peak');
+  let vdLoad=null, ldRaw=null;
+  if(vdPop!==null){ vdLoad = vdPop*1.25; }
+  if(vdLoad!==null && peak!==null){ ldRaw = peak*vdLoad; }
+  setOut('o-vdload', vdLoad!==null ? fmt(vdLoad,1)+'<span class="unit">L</span>' : '—');
+  setOut('o-ld-raw', ldRaw!==null ? fmt(ldRaw,0)+'<span class="unit">mg</span>' : '—');
+
+  let ldPractical=null;
+  if(ldRaw!==null){
+    ldPractical = Math.min(roundToIncrement(ldRaw, round), maxLoad);
+  }
+  setOut('o-ld-practical', ldPractical!==null ? fmt(ldPractical,0)+' mg' : '—');
+  const ldWarnEl = document.getElementById('ld-warn');
+  const ldBadgeEl = document.getElementById('ld-badge');
+  if(ldRaw!==null && tbw!==null){
+    const mgPerKg = ldRaw/tbw;
+    if(ldRaw > maxLoad){
+      ldBadgeEl.className='badge red'; ldBadgeEl.textContent='capped at max';
+      ldWarnEl.textContent = `Raw calculated dose (${fmt(ldRaw,0)} mg) exceeds the ${maxLoad} mg cap — capped.`;
+    } else if(mgPerKg < ldLow || mgPerKg > ldHigh){
+      ldBadgeEl.className='badge amber'; ldBadgeEl.textContent='outside guideline mg/kg';
+      ldWarnEl.textContent = `${fmt(mgPerKg,1)} mg/kg TBW is outside the ${ldLow}–${ldHigh} mg/kg guideline range — confirm clinically.`;
+    } else {
+      ldBadgeEl.className='badge green'; ldBadgeEl.textContent='within guideline';
+      ldWarnEl.textContent='';
+    }
+  } else {
+    ldBadgeEl.className='badge neutral'; ldBadgeEl.textContent='—'; ldWarnEl.textContent='';
+  }
+
+  // Maintenance dose
+  const desiredAUC1 = num('p1-auc');
+  const interval1 = num('p1-interval');
+  let dailyRaw=null;
+  if(clvPop!==null && desiredAUC1!==null){ dailyRaw = clvPop*desiredAUC1; }
+  setOut('o-daily-raw', dailyRaw!==null ? fmt(dailyRaw,0)+'<span class="unit">mg/day</span>' : '—');
+
+  let maintPracticalDose=null, dosesPerDay=null;
+  if(dailyRaw!==null && interval1!==null && interval1>0){
+    dosesPerDay = 24/interval1;
+    const perDoseRaw = dailyRaw/dosesPerDay;
+    maintPracticalDose = roundToIncrement(perDoseRaw, round);
+  }
+  setOut('o-maint-practical', maintPracticalDose!==null ? `${fmt(maintPracticalDose,0)} mg q${interval1}h` : '—');
+
+  // ---------- PHASE 1B ----------
+  const dose1b = num('p1b-dose');
+  const ti1b = num('p1b-ti');
+  const chigh = num('p1b-chigh');
+  const clow = num('p1b-clow');
+  const dt1b = num('p1b-dt');
+  const t1b = num('p1b-t');
+
+  let ke1b=null, cmax1b=null, vd1b=null, clv1b=null, thalf1b=null;
+  if(chigh!==null && clow!==null && dt1b!==null && dt1b>0 && chigh>0 && clow>0){
+    ke1b = Math.log(chigh/clow)/dt1b;
+  }
+  if(ke1b!==null && chigh!==null && t1b!==null){
+    cmax1b = chigh*Math.exp(ke1b*t1b);
+  }
+  if(dose1b!==null && ti1b!==null && ke1b!==null && cmax1b!==null && ti1b>0 && ke1b>0){
+    vd1b = (dose1b*(1-Math.exp(-ke1b*ti1b))) / (ti1b*ke1b*cmax1b);
+  }
+  if(ke1b!==null && vd1b!==null){ clv1b = ke1b*vd1b; }
+  if(ke1b!==null && ke1b>0){ thalf1b = Math.log(2)/ke1b; }
+
+  setOut('o-1b-ke', ke1b!==null ? fmt(ke1b,4)+'<span class="unit">hr⁻¹</span>' : '—');
+  setOut('o-1b-cmax', cmax1b!==null ? fmt(cmax1b,2)+'<span class="unit">mcg/mL</span>' : '—');
+  setOut('o-1b-vd', vd1b!==null ? fmt(vd1b,1)+'<span class="unit">L</span>' : '—');
+  setOut('o-1b-clv', clv1b!==null ? fmt(clv1b,3)+'<span class="unit">L/hr</span>' : '—');
+  setOut('o-1b-thalf', thalf1b!==null ? fmt(thalf1b,1)+'<span class="unit">hr</span>' : '—');
+
+  // Effective Vd/CLv used downstream: prefer patient-specific (1B) if present, else population
+  const vdEffective = (vd1b!==null) ? vd1b : vdPop;
+  const clvEffectiveForP2 = (clv1b!==null) ? clv1b : clvPop;
+
+  // ---------- PHASE 2 ----------
+  let keForHalfLife = (ke1b!==null) ? ke1b : ((clvEffectiveForP2!==null && vdEffective!==null && vdEffective>0) ? clvEffectiveForP2/vdEffective : null);
+  let thalf2=null, tss2=null;
+  if(keForHalfLife!==null && keForHalfLife>0){
+    thalf2 = Math.log(2)/keForHalfLife;
+    tss2 = thalf2*4.5; // midpoint of "4-5 half-lives"
+  }
+  setOut('o-2-thalf', thalf2!==null ? fmt(thalf2,1)+'<span class="unit">hr</span>' : '—');
+  setOut('o-2-tss', tss2!==null ? '~'+fmt(tss2,0)+'<span class="unit">hr (4–5 half-lives)</span>' : '—');
+
+  // ---------- PHASE 3 ----------
+  // Auto-fill dose field placeholder from Phase 1 practical maintenance dose if user hasn't typed one
+  const p3DoseEl = document.getElementById('p3-dose');
+  if(maintPracticalDose!==null){ p3DoseEl.placeholder = fmt(maintPracticalDose,0)+' (from Phase 1)'; }
+
+  const dose3 = num('p3-dose') ?? maintPracticalDose;
+  const T3 = num('p3-T');
+  const ti3 = num('p3-ti');
+  const css3 = num('p3-css');
+  const vd3 = vdEffective;
+
+  setOut('o-3-vd', vd3!==null ? fmt(vd3,1)+'<span class="unit">L</span>'+(vd1b!==null?' (patient-specific)':' (population)') : '—');
+
+  let ke3=null, clv3=null, tdd3=null, auc3=null;
+  if(dose3!==null && T3!==null && ti3!==null && css3!==null && vd3!==null && T3>ti3 && css3>0 && dose3>0){
+    ke3 = solveKeFromCss(dose3, T3, ti3, vd3, css3);
+  }
+  if(ke3!==null){ clv3 = ke3*vd3; }
+  if(dose3!==null && T3!==null && T3>0){ tdd3 = dose3*(24/T3); }
+  if(tdd3!==null && clv3!==null && clv3>0){ auc3 = tdd3/clv3; }
+
+  setOut('o-3-ke', ke3!==null ? fmt(ke3,4)+'<span class="unit">hr⁻¹</span>' : (dose3&&T3&&ti3&&css3&&vd3 ? 'no solution found — check inputs' : '—'));
+  setOut('o-3-clv', clv3!==null ? fmt(clv3,3)+'<span class="unit">L/hr</span>' : '—');
+  setOut('o-3-tdd', tdd3!==null ? fmt(tdd3,0)+'<span class="unit">mg/day</span>' : '—');
+  setOut('o-3-auc', auc3!==null ? fmt(auc3,0) : '—');
+  const auc3Badge = badgeForAUC(auc3, aucLow, aucHigh);
+  const auc3BadgeEl = document.getElementById('o-3-auc-badge');
+  auc3BadgeEl.className = 'badge '+auc3Badge.cls;
+  auc3BadgeEl.textContent = auc3Badge.txt;
+
+  // ---------- PHASE 4 ----------
+  const desiredAUC4 = num('p4-auc');
+  let newDaily4=null, newPerDose4=null, newDosesPerDay4=null;
+  if(clv3!==null && desiredAUC4!==null){
+    newDaily4 = clv3*desiredAUC4;
+  }
+  if(newDaily4!==null && T3!==null && T3>0){
+    newDosesPerDay4 = 24/T3;
+    newPerDose4 = roundToIncrement(newDaily4/newDosesPerDay4, round);
+  }
+  setOut('o-4-daily', newDaily4!==null ? fmt(newDaily4,0)+'<span class="unit">mg/day</span>' : '—');
+  setOut('o-4-practical', (newPerDose4!==null && T3!==null) ? `${fmt(newPerDose4,0)} mg q${T3}h` : '—');
+}
+
+document.querySelectorAll('input, select').forEach(el=>{
+  el.addEventListener('input', recalcAll);
+  el.addEventListener('change', recalcAll);
+});
+
+recalcAll();
+</script>
+
+</body>
+</html>
