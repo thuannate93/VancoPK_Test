@@ -6,92 +6,112 @@
 <title>VancoPK Calculator</title>
 <style>
   :root{
-    --ink:#1c2b2a;
-    --paper:#f6f5f1;
-    --panel:#ffffff;
-    --line:#d9d6cc;
-    --teal:#1f5f5b;
-    --teal-dark:#153f3c;
-    --amber:#a8701a;
-    --amber-bg:#fbeed9;
-    --red:#a3372b;
-    --red-bg:#fbe4e0;
-    --green:#2c6e49;
-    --green-bg:#e3f0e6;
+    --ink:#1c2333;
+    --sub:#c7cfe0;
+    --page-a:#e9ddc9;
+    --page-b:#f3ede0;
+    --navy:#16233f;
+    --navy-head:#0c1730;
+    --navy-line:#2c3c5e;
+    --gold:#eeb149;
+    --gold-dark:#d99a2b;
+    --gray-field:#d7d7d3;
+    --blue-btn:#2f5fa8;
+    --blue-btn-dark:#254c88;
+    --amber:#8a5a00;
+    --amber-bg:#fbe7bd;
+    --red:#9c2b1f;
+    --red-bg:#f6d9d3;
+    --green:#1f6b3a;
+    --green-bg:#dcefe0;
     --mono: "SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--paper);
+    background:linear-gradient(160deg, var(--page-a), var(--page-b) 60%);
     color:var(--ink);
-    font-family:"IBM Plex Sans", -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family:var(--sans);
     line-height:1.45;
   }
   header{
-    background:var(--teal-dark);
-    color:#f2efe6;
-    padding:28px 20px 22px;
+    background:transparent;
+    padding:34px 20px 18px;
+    text-align:center;
   }
-  header .wrap{max-width:920px;margin:0 auto;}
+  header .wrap{max-width:960px;margin:0 auto;}
   header h1{
     margin:0 0 6px;
-    font-size:1.55rem;
-    font-weight:600;
-    letter-spacing:.2px;
+    font-family:var(--serif);
+    font-size:2.1rem;
+    font-weight:400;
+    letter-spacing:.5px;
+    color:#2a2620;
   }
-  header p.sub{margin:0;font-size:.85rem;color:#c9d9d6;}
+  header p.sub{margin:0;font-size:.85rem;color:#6b6455;}
   .disclaimer{
-    max-width:920px;margin:16px auto 0;
-    background:#f9edd6;
-    border:1px solid #e2c98a;
-    color:#5c4a12;
+    max-width:960px;margin:16px auto 0;
+    background:var(--amber-bg);
+    border:1px solid #e8c477;
+    color:var(--amber);
     padding:12px 16px;
     border-radius:6px;
     font-size:.82rem;
   }
-  main{max-width:920px;margin:0 auto;padding:22px 20px 80px;}
+  main{max-width:960px;margin:0 auto;padding:22px 20px 80px;}
   .phase{
-    background:var(--panel);
-    border:1px solid var(--line);
+    background:var(--navy);
+    border:1px solid var(--navy-line);
     border-radius:10px;
     margin-bottom:22px;
     overflow:hidden;
+    box-shadow:0 6px 18px rgba(20,25,45,.18);
   }
   .phase-head{
     display:flex;
     align-items:baseline;
     gap:10px;
-    padding:16px 20px;
-    background:var(--teal);
+    padding:14px 20px;
+    background:var(--navy-head);
     color:#fff;
     cursor:pointer;
     user-select:none;
+    justify-content:center;
+    position:relative;
   }
   .phase-head .num{
-    font-family:var(--mono);
-    font-size:.78rem;
-    background:rgba(255,255,255,.18);
-    padding:2px 8px;
+    position:absolute;
+    left:20px;
+    font-family:var(--sans);
+    font-size:.7rem;
+    font-weight:700;
+    letter-spacing:.05em;
+    background:rgba(255,255,255,.12);
+    color:var(--gold);
+    padding:2px 9px;
     border-radius:20px;
   }
-  .phase-head h2{margin:0;font-size:1.02rem;font-weight:600;}
-  .phase-head .toggle{margin-left:auto;font-size:.85rem;opacity:.85;}
-  .phase-body{padding:18px 20px 22px;}
+  .phase-head h2{margin:0;font-size:1.05rem;font-weight:700;text-align:center;color:#fff;}
+  .phase-head .toggle{position:absolute;right:20px;font-size:.8rem;color:#aeb8cc;}
+  .phase-body{padding:20px 20px 22px;}
   .phase-body.collapsed{display:none;}
-  .note{font-size:.78rem;color:#6b6a63;margin:6px 0 14px;}
+  .note{font-size:.78rem;color:#a9b2c6;margin:6px 0 14px;}
   fieldset{
-    border:1px solid var(--line);
+    border:1px solid var(--navy-line);
     border-radius:8px;
     margin:0 0 16px;
     padding:14px 16px 16px;
+    background:rgba(255,255,255,.02);
   }
   legend{
     font-size:.72rem;
     text-transform:uppercase;
-    letter-spacing:.06em;
-    color:#7a7a72;
+    letter-spacing:.08em;
+    color:var(--gold);
     padding:0 6px;
+    font-weight:700;
   }
   .grid{
     display:grid;
@@ -100,32 +120,48 @@
   }
   label{
     display:block;
-    font-size:.78rem;
-    color:#4a4a44;
-    margin-bottom:4px;
+    font-size:.82rem;
+    color:#eef1f8;
+    margin-bottom:5px;
+    font-weight:700;
   }
-  input[type=number], select, input[type=text]{
+  input[type=number], input[type=text]{
     width:100%;
-    padding:8px 9px;
+    padding:9px 10px;
     font-size:.92rem;
-    border:1px solid var(--line);
+    border:1px solid #c99a3a;
     border-radius:6px;
-    background:#fff;
-    color:var(--ink);
-    font-family:var(--mono);
+    background:var(--gold);
+    color:#241a04;
+    font-family:var(--sans);
+    font-weight:600;
   }
-  input:focus, select:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  select{
+    width:100%;
+    padding:9px 10px;
+    font-size:.9rem;
+    border:1px solid #b8b8b0;
+    border-radius:6px;
+    background:var(--gray-field);
+    color:#2a2a26;
+    font-family:var(--sans);
+    font-weight:600;
+  }
+  input::placeholder{color:#6b5620;}
+  input:focus, select:focus{outline:2px solid #fff; outline-offset:1px;}
   .field{margin-bottom:4px;}
   .out{
-    background:#f0efe9;
-    border:1px dashed #c7c4b7;
+    background:var(--gray-field);
+    border:1px solid #b8b8b0;
     border-radius:6px;
-    padding:8px 9px;
+    padding:9px 10px;
     font-family:var(--mono);
-    font-size:.92rem;
+    font-size:.9rem;
     min-height:1.3em;
+    color:#20201c;
+    font-weight:700;
   }
-  .out .unit{color:#8a897f;font-size:.78rem;margin-left:4px;}
+  .out .unit{color:#5c5c56;font-size:.76rem;margin-left:4px;font-weight:400;}
   .results{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
@@ -135,8 +171,8 @@
   .badge{
     display:inline-block;
     font-size:.72rem;
-    font-weight:600;
-    padding:2px 9px;
+    font-weight:700;
+    padding:3px 10px;
     border-radius:20px;
     margin-left:6px;
     vertical-align:middle;
@@ -144,44 +180,47 @@
   .badge.green{background:var(--green-bg);color:var(--green);}
   .badge.amber{background:var(--amber-bg);color:var(--amber);}
   .badge.red{background:var(--red-bg);color:var(--red);}
-  .badge.neutral{background:#eceae2;color:#7a7a72;}
+  .badge.neutral{background:#3a4666;color:#c7cfe0;}
   .rowline{
     display:flex;justify-content:space-between;align-items:center;
-    padding:6px 0;border-bottom:1px solid #eeece4;font-size:.88rem;
+    padding:6px 0;border-bottom:1px solid var(--navy-line);font-size:.88rem;color:#eef1f8;
   }
   .rowline:last-child{border-bottom:none;}
   .rowline .val{font-family:var(--mono);font-weight:600;}
   .practical{
     margin-top:12px;
-    background:#eef3f1;
-    border:1px solid #cfe0da;
+    background:var(--navy-head);
+    border:1px solid var(--navy-line);
     border-radius:8px;
-    padding:12px 14px;
+    padding:14px 16px;
   }
-  .practical .big{font-size:1.15rem;font-weight:700;color:var(--teal-dark);}
+  .practical > div:first-child{color:#aeb8cc;font-size:.8rem;font-weight:600;margin-bottom:4px;}
+  .practical .big{font-size:1.25rem;font-weight:700;color:var(--gold);}
   .two-col-btn{
     display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;
   }
   .two-col-btn button{
     flex:1;min-width:160px;
-    padding:9px 10px;
+    padding:11px 10px;
     border-radius:7px;
-    border:1px solid var(--line);
-    background:#fff;
-    font-size:.82rem;
+    border:none;
+    background:var(--blue-btn);
+    color:#fff;
+    font-size:.85rem;
+    font-weight:700;
     cursor:pointer;
   }
   .two-col-btn button.active{
-    background:var(--teal);color:#fff;border-color:var(--teal);
+    background:var(--gold-dark);color:#241a04;
   }
   .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   footer{
     text-align:center;
-    color:#8a897f;
+    color:#6b6455;
     font-size:.78rem;
     padding:0 20px 40px;
   }
-  .warn-line{font-size:.78rem;color:var(--red);margin-top:6px;}
+  .warn-line{font-size:.78rem;color:#c0392b;margin-top:6px;font-weight:600;}
   @media (max-width:520px){
     .grid, .results{grid-template-columns:1fr 1fr;}
   }
@@ -253,27 +292,27 @@
         <div class="grid">
           <div class="field">
             <label for="p1-age">Age (years)</label>
-            <input type="number" id="p1-age" value="60">
+            <input type="number" id="p1-age" placeholder="e.g. 60">
           </div>
           <div class="field">
             <label for="p1-sex">Sex</label>
             <select id="p1-sex">
-              <option value="">—</option>
-              <option value="male" selected>Male</option>
+              <option value="" selected>—</option>
+              <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
           </div>
           <div class="field">
             <label for="p1-wt">Actual body weight — TBW (kg)</label>
-            <input type="number" id="p1-wt" value="80" step="0.1">
+            <input type="number" id="p1-wt" placeholder="e.g. 80" step="0.1">
           </div>
           <div class="field">
             <label for="p1-ht">Height (cm)</label>
-            <input type="number" id="p1-ht" value="178" step="0.1">
+            <input type="number" id="p1-ht" placeholder="e.g. 178" step="0.1">
           </div>
           <div class="field">
             <label for="p1-scr">Serum creatinine — SCr (mg/dL)</label>
-            <input type="number" id="p1-scr" value="0.9" step="0.01">
+            <input type="number" id="p1-scr" placeholder="e.g. 0.9" step="0.01">
           </div>
           <div class="field">
             <label for="p1-crcl-known">Measured/known CrCl — optional override (mL/min)</label>
@@ -307,7 +346,7 @@
         <div class="grid">
           <div class="field">
             <label for="p1-peak">Desired peak (mcg/mL)</label>
-            <input type="number" id="p1-peak" value="25" step="0.5">
+            <input type="number" id="p1-peak" placeholder="e.g. 25" step="0.5">
           </div>
         </div>
         <div class="results">
@@ -326,11 +365,11 @@
         <div class="grid">
           <div class="field">
             <label for="p1-auc">Desired AUC24 (mg·h/L)</label>
-            <input type="number" id="p1-auc" value="500" step="10">
+            <input type="number" id="p1-auc" placeholder="e.g. 500" step="10">
           </div>
           <div class="field">
             <label for="p1-interval">Dosing interval (hours)</label>
-            <input type="number" id="p1-interval" value="12" step="1">
+            <input type="number" id="p1-interval" placeholder="e.g. 12" step="1">
           </div>
         </div>
         <div class="results">
@@ -363,7 +402,7 @@
           </div>
           <div class="field">
             <label for="p1b-ti">Infusion duration ti (hr)</label>
-            <input type="number" id="p1b-ti" value="1" step="0.1">
+            <input type="number" id="p1b-ti" placeholder="e.g. 1" step="0.1">
           </div>
           <div class="field">
             <label for="p1b-chigh">C-high (mcg/mL)</label>
@@ -430,11 +469,11 @@
           </div>
           <div class="field">
             <label for="p3-T">Dosing interval T (hr)</label>
-            <input type="number" id="p3-T" value="12" step="1">
+            <input type="number" id="p3-T" placeholder="e.g. 12" step="1">
           </div>
           <div class="field">
             <label for="p3-ti">Infusion duration ti (hr)</label>
-            <input type="number" id="p3-ti" value="1" step="0.1">
+            <input type="number" id="p3-ti" placeholder="e.g. 1" step="0.1">
           </div>
           <div class="field">
             <label for="p3-css">Measured steady-state level, Css (mcg/mL)</label>
@@ -470,7 +509,7 @@
         <div class="grid">
           <div class="field">
             <label for="p4-auc">Desired AUC24 (mg·h/L)</label>
-            <input type="number" id="p4-auc" value="500" step="10">
+            <input type="number" id="p4-auc" placeholder="e.g. 500" step="10">
           </div>
         </div>
         <div class="results">
